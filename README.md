@@ -1,2 +1,2 @@
 # Medimate
- Negative Drug Interaction Checker 
+Checker for Negative Interaction of Drug 
