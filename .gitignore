@@ -1,5 +1,7 @@
 Server/venv/
 .idea/
+Server/data
+MyProject-38e6d9b1ad6f.json
 
 #temporary files
 *.log
