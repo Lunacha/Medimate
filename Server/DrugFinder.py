@@ -43,6 +43,6 @@ drugFinder.InsertText('','')
 for i in range(2,237):
     if i == 236:
         drugFinder.CrawlInfo(i, 97)
-    else
+    else:
         drugFinder.CrawlInfo(i, 100)
 
