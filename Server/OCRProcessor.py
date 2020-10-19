@@ -1,5 +1,4 @@
 import io
-import os
 from ImgPreprocessor import ImgPreprocessor
 from google.cloud import vision
 from google.cloud.vision import types
@@ -32,7 +31,7 @@ class OCRProcessor:
 
 if __name__ == '__main__':
     img_pproc = ImgPreprocessor()
-    drug_image = img_pproc.ProcExecute("solondo.jpg")
+    drug_image = img_pproc.ProcExecute("viekira.jpg")
     img_pproc.display()
     ocr = OCRProcessor()
     ocr.OCRExecute("tmp.jpg")

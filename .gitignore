@@ -8,3 +8,4 @@ MyProject-38e6d9b1ad6f.json
 *.pot
 *.pyc
 __pycache__/
+Server/chromedriver.exe
