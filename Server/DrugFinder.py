@@ -1,4 +1,7 @@
 from selenium import webdriver
+import json
+import re
+
 
 class DrugFinder:
     def __init__(self):
@@ -9,11 +12,11 @@ class DrugFinder:
         self.chrome_options.add_argument('lang=ko_KR')
         self.wait = None
 
-    def FinderExecute(self):
+    def finder_execute(self):
         self.driver.get('http://www.health.kr/searchIdentity/search.asp')
         self.driver.implicitly_wait(3)
 
-    def InsertText(self, front, back):
+    def insert_text(self, front, back):
         self.driver.find_element_by_id('drug_print_front').send_keys('')
         self.driver.find_element_by_id('drug_print_back').send_keys('')
         self.driver.find_element_by_id('btn_idfysearch').click()
@@ -21,7 +24,9 @@ class DrugFinder:
         self.driver.execute_script('''line_selectBoxToggle('100','100줄 보기')''')
         self.driver.implicitly_wait(20)
 
-    def CrawlInfo(self,page,row_size):
+    def crawl_info(self, page, row_size, drugs):
+        drug = dict()
+
         table = self.driver.find_element_by_id("idfytotal0")
         tbody = table.find_element_by_tag_name("tbody")
         rows = tbody.find_elements_by_tag_name("tr")
@@ -29,20 +34,30 @@ class DrugFinder:
             tableRow = table.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr['''+str(i)+"]")
             mark = tableRow.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr['''+str(i)+"]/td[2]")
             name = tableRow.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr[''' + str(i) + "]/td[7]")
-            print(mark.text)
+            drug['mark'] = re.split(' / ', mark.text)
+            drug['name'] = re.split('\n| ', name.text)
+            drug['id'] = i
+            drugs.append(drug)
         if row_size == 100:
             self.driver.execute_script('''changePage('''+str(page)+")")
             self.driver.implicitly_wait(30)
 
 
+if __name__ == '__main__':
+    drugFinder = DrugFinder()
+    drugFinder.finder_execute()
+    drugFinder.insert_text('','')
+    drugDB = dict()
+    drugInfo = list()
+    for i in range(2, 237):
+        if i == 236:
+            drugFinder.crawl_info(i, 97, drugInfo)
+        else:
+            drugFinder.crawl_info(i, 100, drugInfo)
 
+    drugDB['drugs'] = drugInfo
+    jsonDrugDB = json.dumps(drugDB)
 
-drugFinder = DrugFinder()
-drugFinder.FinderExecute()
-drugFinder.InsertText('','')
-for i in range(2,237):
-    if i == 236:
-        drugFinder.CrawlInfo(i, 97)
-    else:
-        drugFinder.CrawlInfo(i, 100)
+    with open('drugDB.json','w') as outfile:
+        json.dump(jsonDrugDB, outfile, indent=4)
 
