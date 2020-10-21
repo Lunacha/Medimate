@@ -11,6 +11,7 @@ class DrugFinder:
         self.chrome_options.add_argument('--disable-gpu')
         self.chrome_options.add_argument('lang=ko_KR')
         self.wait = None
+        self.drug_index = 1
 
     def finder_execute(self):
         self.driver.get('http://www.health.kr/searchIdentity/search.asp')
@@ -25,19 +26,19 @@ class DrugFinder:
         self.driver.implicitly_wait(20)
 
     def crawl_info(self, page, row_size, drugs):
-        drug = dict()
-
         table = self.driver.find_element_by_id("idfytotal0")
-        tbody = table.find_element_by_tag_name("tbody")
-        rows = tbody.find_elements_by_tag_name("tr")
+
         for i in range(3,3+row_size):
+            drug = dict()
             tableRow = table.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr['''+str(i)+"]")
             mark = tableRow.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr['''+str(i)+"]/td[2]")
             name = tableRow.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr[''' + str(i) + "]/td[7]")
-            drug['mark'] = re.split(' / ', mark.text)
-            drug['name'] = re.split('\n| ', name.text)
-            drug['id'] = i
+            drug['mark'] = re.split(' / | /|/ ', mark.text)
+            drug['name'] = re.split('\n', name.text.replace('\u3000', ' '))
+            print(drug['name'])
+            drug['id'] = self.drug_index
             drugs.append(drug)
+            self.drug_index += 1
         if row_size == 100:
             self.driver.execute_script('''changePage('''+str(page)+")")
             self.driver.implicitly_wait(30)
@@ -46,7 +47,7 @@ class DrugFinder:
 if __name__ == '__main__':
     drugFinder = DrugFinder()
     drugFinder.finder_execute()
-    drugFinder.insert_text('','')
+    drugFinder.insert_text('', '')
     drugDB = dict()
     drugInfo = list()
     for i in range(2, 237):
@@ -56,8 +57,7 @@ if __name__ == '__main__':
             drugFinder.crawl_info(i, 100, drugInfo)
 
     drugDB['drugs'] = drugInfo
-    jsonDrugDB = json.dumps(drugDB)
 
-    with open('drugDB.json','w') as outfile:
-        json.dump(jsonDrugDB, outfile, indent=4)
+    with open('drugDB.json', 'w', encoding='UTF-8-sig') as outfile:
+        outfile.write(json.dumps(drugDB,ensure_ascii=False))
 
