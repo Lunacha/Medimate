@@ -7,7 +7,7 @@ class OCRProcessor:
     def __init__(self):
         self.client = vision.ImageAnnotatorClient()
 
-    def OCRExecute(self, file_name=None):
+    def ocr_execute(self, file_name=None):
 
         if file_name is not None:
             with io.open("./data/" + file_name, 'rb') as img_file:
@@ -31,7 +31,7 @@ class OCRProcessor:
 
 if __name__ == '__main__':
     img_pproc = ImgPreprocessor()
-    drug_image = img_pproc.ProcExecute("viekira.jpg")
+    drug_image = img_pproc.proc_execute("viekira.jpg")
     img_pproc.display()
     ocr = OCRProcessor()
-    ocr.OCRExecute("tmp.jpg")
+    ocr.ocr_execute("tmp.jpg")

@@ -8,7 +8,7 @@ class ImgPreprocessor:
         self.image = None
         self.kernel = np.ones((5, 5), np.uint8)
 
-    def ProcExecute(self, file_name):
+    def proc_execute(self, file_name):
         self.image = cv2.imread("./data/" + file_name, cv2.IMREAD_GRAYSCALE)
         self.image = cv2.resize(self.image, None, fx=1.2, fy=1.2, interpolation=cv2.INTER_CUBIC)
         self.image = cv2.GaussianBlur(self.image, (1, 1), cv2.BORDER_DEFAULT)
