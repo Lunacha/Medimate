@@ -2,15 +2,13 @@ from selenium import webdriver
 import json
 import re
 
-
 class DrugFinder:
     def __init__(self):
         self.chrome_options = webdriver.ChromeOptions()
-        self.driver = webdriver.Chrome('chromedriver.exe')
         self.chrome_options.add_argument('headless')
         self.chrome_options.add_argument('--disable-gpu')
         self.chrome_options.add_argument('lang=ko_KR')
-        self.wait = None
+        self.driver = webdriver.Chrome('chromedriver.exe', options=self.chrome_options)
         self.drug_index = 1
 
     def finder_execute(self):
@@ -27,7 +25,6 @@ class DrugFinder:
 
     def crawl_info(self, page, row_size, drugs):
         table = self.driver.find_element_by_id("idfytotal0")
-
         for i in range(3,3+row_size):
             drug = dict()
             tableRow = table.find_element_by_xpath('''//*[@id="idfytotal0"]/tbody/tr['''+str(i)+"]")
@@ -50,11 +47,9 @@ if __name__ == '__main__':
     drugFinder.insert_text('', '')
     drugDB = dict()
     drugInfo = list()
-    for i in range(2, 237):
-        if i == 236:
-            drugFinder.crawl_info(i, 97, drugInfo)
-        else:
-            drugFinder.crawl_info(i, 100, drugInfo)
+    drugFinder.crawl_info(1, 95, drugInfo)
+    for i in range(2, 236):
+        drugFinder.crawl_info(i, 100, drugInfo)
 
     drugDB['drugs'] = drugInfo
 
